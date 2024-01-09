@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ERPNaqelModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EmailNotificationLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WaybillNo" Type="int" />
+          <Property Name="EmailAddress" Type="nvarchar(max)" />
+          <Property Name="IsPickup_EmailSent" Type="bit" />
+          <Property Name="IsOFD_EmailSent" Type="bit" />
+          <Property Name="IsDelivered_EmailSent" Type="bit" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="LastUpdatedDate" Type="datetime" />
+          <Property Name="StatusID" Type="int" />
+          <Property Name="IsExceptions_EmailSent" Type="bit" />
+        </EntityType>
+        <EntityType Name="OFDEmailNotificationLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="WaybillNo" Type="int" />
+          <Property Name="EmailAddress" Type="nvarchar(max)" />
+          <Property Name="IsOFD_EmailSent" Type="bit" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="StatusID" Type="int" />
+          <Property Name="IsExceptions_EmailSent" Type="bit" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ERPNaqel.dbo.EmailNotificationPickup' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="EmailNotificationPickup">
+          <Key>
+            <PropertyRef Name="waybillno" />
+          </Key>
+          <Property Name="waybillno" Type="int" Nullable="false" />
+          <Property Name="CneeEmail" Type="nvarchar" MaxLength="250" />
+          <Property Name="CneeName" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShipperNameEN" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShipperNameAR" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationDelivered' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ViwEmailNotificationDelivered">
+          <Key>
+            <PropertyRef Name="waybillno" />
+          </Key>
+          <Property Name="waybillno" Type="int" Nullable="false" />
+          <Property Name="CneeEmail" Type="nvarchar" MaxLength="250" />
+          <Property Name="CneeName" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShipperNameEN" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShipperNameAR" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'ERPNaqel.dbo.ViwEmailNotificationExceptions' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="ViwEmailNotificationExceptions">
+          <Property Name="waybillno" Type="int" />
+          <Property Name="CneeEmail" Type="nvarchar" MaxLength="250" />
+          <Property Name="CneeName" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShipperNameEN" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShipperNameAR" Type="nvarchar" MaxLength="255" />
+        </EntityType>-->
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationOFD' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ViwEmailNotificationOFD">
+          <Key>
+            <PropertyRef Name="waybillno" />
+          </Key>
+          <Property Name="waybillno" Type="int" Nullable="false" />
+          <Property Name="CneeEmail" Type="nvarchar" MaxLength="250" />
+          <Property Name="CneeName" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShipperNameEN" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShipperNameAR" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityContainer Name="ERPNaqelModelStoreContainer">
+          <EntitySet Name="EmailNotificationLog" EntityType="Self.EmailNotificationLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OFDEmailNotificationLog" EntityType="Self.OFDEmailNotificationLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EmailNotificationPickup" EntityType="Self.EmailNotificationPickup" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [EmailNotificationPickup].[waybillno] AS [waybillno], 
+    [EmailNotificationPickup].[CneeEmail] AS [CneeEmail], 
+    [EmailNotificationPickup].[CneeName] AS [CneeName], 
+    [EmailNotificationPickup].[ShipperNameEN] AS [ShipperNameEN], 
+    [EmailNotificationPickup].[ShipperNameAR] AS [ShipperNameAR]
+    FROM [dbo].[EmailNotificationPickup] AS [EmailNotificationPickup]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ViwEmailNotificationDelivered" EntityType="Self.ViwEmailNotificationDelivered" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ViwEmailNotificationDelivered].[waybillno] AS [waybillno], 
+    [ViwEmailNotificationDelivered].[CneeEmail] AS [CneeEmail], 
+    [ViwEmailNotificationDelivered].[CneeName] AS [CneeName], 
+    [ViwEmailNotificationDelivered].[ShipperNameEN] AS [ShipperNameEN], 
+    [ViwEmailNotificationDelivered].[ShipperNameAR] AS [ShipperNameAR]
+    FROM [dbo].[ViwEmailNotificationDelivered] AS [ViwEmailNotificationDelivered]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ViwEmailNotificationOFD" EntityType="Self.ViwEmailNotificationOFD" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ViwEmailNotificationOFD].[waybillno] AS [waybillno], 
+    [ViwEmailNotificationOFD].[CneeEmail] AS [CneeEmail], 
+    [ViwEmailNotificationOFD].[CneeName] AS [CneeName], 
+    [ViwEmailNotificationOFD].[ShipperNameEN] AS [ShipperNameEN], 
+    [ViwEmailNotificationOFD].[ShipperNameAR] AS [ShipperNameAR]
+    FROM [dbo].[ViwEmailNotificationOFD] AS [ViwEmailNotificationOFD]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ERPNaqelModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="ERPNaqelEntitiesLive" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="EmailNotificationLogs" EntityType="ERPNaqelModel.EmailNotificationLog" />
+          <EntitySet Name="EmailNotificationPickups" EntityType="ERPNaqelModel.EmailNotificationPickup" />
+          <EntitySet Name="OFDEmailNotificationLogs" EntityType="ERPNaqelModel.OFDEmailNotificationLog" />
+          <EntitySet Name="ViwEmailNotificationDelivereds" EntityType="ERPNaqelModel.ViwEmailNotificationDelivered" />
+          <EntitySet Name="ViwEmailNotificationOFDs" EntityType="ERPNaqelModel.ViwEmailNotificationOFD" />
+        </EntityContainer>
+        <EntityType Name="EmailNotificationLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WaybillNo" Type="Int32" />
+          <Property Name="EmailAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsPickup_EmailSent" Type="Boolean" />
+          <Property Name="IsOFD_EmailSent" Type="Boolean" />
+          <Property Name="IsDelivered_EmailSent" Type="Boolean" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="LastUpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="StatusID" Type="Int32" />
+          <Property Name="IsExceptions_EmailSent" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="EmailNotificationPickup">
+          <Key>
+            <PropertyRef Name="waybillno" />
+          </Key>
+          <Property Name="waybillno" Type="Int32" Nullable="false" />
+          <Property Name="CneeEmail" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CneeName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ShipperNameEN" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ShipperNameAR" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="OFDEmailNotificationLog">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="WaybillNo" Type="Int32" />
+          <Property Name="EmailAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsOFD_EmailSent" Type="Boolean" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="StatusID" Type="Int32" />
+          <Property Name="IsExceptions_EmailSent" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="ViwEmailNotificationDelivered">
+          <Key>
+            <PropertyRef Name="waybillno" />
+          </Key>
+          <Property Name="waybillno" Type="Int32" Nullable="false" />
+          <Property Name="CneeEmail" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CneeName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ShipperNameEN" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ShipperNameAR" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ViwEmailNotificationOFD">
+          <Key>
+            <PropertyRef Name="waybillno" />
+          </Key>
+          <Property Name="waybillno" Type="Int32" Nullable="false" />
+          <Property Name="CneeEmail" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CneeName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ShipperNameEN" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ShipperNameAR" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ERPNaqelModelStoreContainer" CdmEntityContainer="ERPNaqelEntitiesLive">
+          <EntitySetMapping Name="EmailNotificationLogs">
+            <EntityTypeMapping TypeName="ERPNaqelModel.EmailNotificationLog">
+              <MappingFragment StoreEntitySet="EmailNotificationLog">
+                <ScalarProperty Name="IsExceptions_EmailSent" ColumnName="IsExceptions_EmailSent" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="LastUpdatedDate" ColumnName="LastUpdatedDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsDelivered_EmailSent" ColumnName="IsDelivered_EmailSent" />
+                <ScalarProperty Name="IsOFD_EmailSent" ColumnName="IsOFD_EmailSent" />
+                <ScalarProperty Name="IsPickup_EmailSent" ColumnName="IsPickup_EmailSent" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="WaybillNo" ColumnName="WaybillNo" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailNotificationPickups">
+            <EntityTypeMapping TypeName="ERPNaqelModel.EmailNotificationPickup">
+              <MappingFragment StoreEntitySet="EmailNotificationPickup">
+                <ScalarProperty Name="ShipperNameAR" ColumnName="ShipperNameAR" />
+                <ScalarProperty Name="ShipperNameEN" ColumnName="ShipperNameEN" />
+                <ScalarProperty Name="CneeName" ColumnName="CneeName" />
+                <ScalarProperty Name="CneeEmail" ColumnName="CneeEmail" />
+                <ScalarProperty Name="waybillno" ColumnName="waybillno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OFDEmailNotificationLogs">
+            <EntityTypeMapping TypeName="ERPNaqelModel.OFDEmailNotificationLog">
+              <MappingFragment StoreEntitySet="OFDEmailNotificationLog">
+                <ScalarProperty Name="IsExceptions_EmailSent" ColumnName="IsExceptions_EmailSent" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="IsOFD_EmailSent" ColumnName="IsOFD_EmailSent" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+                <ScalarProperty Name="WaybillNo" ColumnName="WaybillNo" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ViwEmailNotificationDelivereds">
+            <EntityTypeMapping TypeName="ERPNaqelModel.ViwEmailNotificationDelivered">
+              <MappingFragment StoreEntitySet="ViwEmailNotificationDelivered">
+                <ScalarProperty Name="ShipperNameAR" ColumnName="ShipperNameAR" />
+                <ScalarProperty Name="ShipperNameEN" ColumnName="ShipperNameEN" />
+                <ScalarProperty Name="CneeName" ColumnName="CneeName" />
+                <ScalarProperty Name="CneeEmail" ColumnName="CneeEmail" />
+                <ScalarProperty Name="waybillno" ColumnName="waybillno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ViwEmailNotificationOFDs">
+            <EntityTypeMapping TypeName="ERPNaqelModel.ViwEmailNotificationOFD">
+              <MappingFragment StoreEntitySet="ViwEmailNotificationOFD">
+                <ScalarProperty Name="ShipperNameAR" ColumnName="ShipperNameAR" />
+                <ScalarProperty Name="ShipperNameEN" ColumnName="ShipperNameEN" />
+                <ScalarProperty Name="CneeName" ColumnName="CneeName" />
+                <ScalarProperty Name="CneeEmail" ColumnName="CneeEmail" />
+                <ScalarProperty Name="waybillno" ColumnName="waybillno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -13,10 +13,10 @@ namespace EmailNotificationNew
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class ERPNaqelEntities : DbContext
+    public partial class ERPNaqelEntitiesLive : DbContext
     {
-        public ERPNaqelEntities()
-            : base("name=ERPNaqelEntities")
+        public ERPNaqelEntitiesLive()
+            : base("name=ERPNaqelEntitiesLive")
         {
         }
     
@@ -25,7 +25,10 @@ namespace EmailNotificationNew
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Waybill> Waybills { get; set; }
-        public virtual DbSet<ViwComplaintClosedchatbot> ViwComplaintClosedchatbots { get; set; }
+        public virtual DbSet<EmailNotificationLog> EmailNotificationLogs { get; set; }
+        public virtual DbSet<EmailNotificationPickup> EmailNotificationPickups { get; set; }
+        public virtual DbSet<OFDEmailNotificationLog> OFDEmailNotificationLogs { get; set; }
+        public virtual DbSet<ViwEmailNotificationDelivered> ViwEmailNotificationDelivereds { get; set; }
+        public virtual DbSet<ViwEmailNotificationOFD> ViwEmailNotificationOFDs { get; set; }
     }
 }

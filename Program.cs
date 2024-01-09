@@ -24,13 +24,13 @@ namespace EmailNotificationNew
 
             try
             {
-                SendEmailNotificationPickup();
+                //SendEmailNotificationPickup();
 
-                SendEmailNotificationDelivered();
+                //SendEmailNotificationDelivered();
 
-                SendEmailNotificationOFD();
+                //SendEmailNotificationOFD();
 
-                SendEmailNotificationExceptions();
+                //SendEmailNotificationExceptions();
             }
             catch (Exception ex)
             {
@@ -47,6 +47,11 @@ namespace EmailNotificationNew
             {
                 var EmailIsSent = false;
                 ERPNaqelEntities1 db = new ERPNaqelEntities1();
+                ERPNaqelEntitiesLive db1 = new ERPNaqelEntitiesLive();
+
+
+                //var SQLData = db1.Database.SqlQuery<EmailNotificationPickup>("select w.waybillno , c.Email As CneeEmail , c.Name As CneeName , cl.Name As ShipperNameEN ,cl.FName As ShipperNameAR  from waybill w WITH(NOLOCK)  left join pickup p WITH(NOLOCK) on p.WaybillNo = w.WayBillNo  left join Consignee c WITH(NOLOCK) on c.ID =  w.ConsigneeID  left join Client cl WITH(NOLOCK) on w.ClientID = cl.ID  left join EmailNotificationLog EN WITH(NOLOCK) on EN.WayBillNo = w.WayBillNo  where ltrim(rtrim(c.Email)) != ''  and c.Email != '0'  and c.Email LIKE '%[^0-9]%'  and c.Email  LIKE '%@%'  and w.LoadTypeID not in (66,136,204)  and w.IsCancelled = 0  and w.IsRTO = 0  and EN.IsPickup_EmailSent is Null  and  CAST(p.TimeIn as Date) = CAST(GETDATE()-1 AS DATE)  and w.WayBillNo = 271420433").ToList();
+
                 List<EmailNotificationPickup> viwEmailNotificationPickups = new List<EmailNotificationPickup>();
 
                 viwEmailNotificationPickups = db.EmailNotificationPickups.ToList();
@@ -81,12 +86,12 @@ namespace EmailNotificationNew
                         if (EmailFormatLanguage == "EN")
                         {
                             htmlformat = pickedupFormatBodyEN(item, URLLink);
-                            EmailIsSent =  EmailBody(htmlformat, To, item.waybillno.ToString()); // replace email with user email 
+                            EmailIsSent =  EmailBody(htmlformat, item.CneeEmail, item.waybillno.ToString()); // replace TO email with item.CneeEmail 
                         }
                         else
                         {
                             htmlformat = PickedupFormatEmailBodyAR(item, URLLink);
-                            EmailIsSent = EmailBody(htmlformat, To, item.waybillno.ToString()); // replace email with user email 
+                            EmailIsSent = EmailBody(htmlformat, item.CneeEmail, item.waybillno.ToString()); // replace TO email with item.CneeEmail 
                         }
 
                         if (EmailIsSent)
