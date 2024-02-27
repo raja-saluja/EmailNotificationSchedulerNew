@@ -32,6 +32,30 @@
           <Property Name="StatusID" Type="int" />
           <Property Name="IsExceptions_EmailSent" Type="bit" />
         </EntityType>
+        <EntityType Name="SMSSentMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="RefNo" Type="nvarchar" MaxLength="250" />
+          <Property Name="MobileNo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Message" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="EmployID" Type="int" Nullable="false" />
+          <Property Name="SMSSendingStatusID" Type="int" Nullable="false" />
+          <Property Name="PurposeID" Type="int" Nullable="false" />
+          <Property Name="StatusID" Type="int" Nullable="false" />
+          <Property Name="MessageID" Type="int" />
+          <Property Name="Balance" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsWhatsApp" Type="bit" />
+          <Property Name="DivisionID" Type="int" />
+          <Property Name="IsCNEEConfirmed" Type="bit" />
+          <Property Name="CoreText" Type="nvarchar" MaxLength="4000" />
+          <Property Name="IsSyncToMySQL" Type="bit" />
+          <Property Name="AccountNo" Type="int" />
+          <Property Name="UnitCount" Type="int" />
+          <Property Name="ResponseMessageID" Type="nvarchar" MaxLength="200" />
+        </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'ERPNaqel.dbo.EmailNotificationPickup' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="EmailNotificationPickup">
@@ -57,15 +81,6 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationDelivered' does n
           <Property Name="ShipperNameAR" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6013: The table/view 'ERPNaqel.dbo.ViwEmailNotificationExceptions' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="ViwEmailNotificationExceptions">
-          <Property Name="waybillno" Type="int" />
-          <Property Name="CneeEmail" Type="nvarchar" MaxLength="250" />
-          <Property Name="CneeName" Type="nvarchar" MaxLength="255" />
-          <Property Name="ShipperNameEN" Type="nvarchar" MaxLength="255" />
-          <Property Name="ShipperNameAR" Type="nvarchar" MaxLength="255" />
-        </EntityType>-->
-        <!--Errors Found During Generation:
 warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationOFD' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="ViwEmailNotificationOFD">
           <Key>
@@ -77,9 +92,23 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationOFD' does not hav
           <Property Name="ShipperNameEN" Type="nvarchar" MaxLength="255" />
           <Property Name="ShipperNameAR" Type="nvarchar" MaxLength="255" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ERPNaqel.dbo.ViwRateCheck' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ViwRateCheck">
+          <Key>
+            <PropertyRef Name="ID" />
+            <PropertyRef Name="WayBillNo" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="WayBillNo" Type="int" Nullable="false" />
+          <Property Name="DeliveryID" Type="int" />
+          <Property Name="EmployID" Type="int" />
+          <Property Name="Balance" Type="nvarchar" MaxLength="50" />
+        </EntityType>
         <EntityContainer Name="ERPNaqelModelStoreContainer">
           <EntitySet Name="EmailNotificationLog" EntityType="Self.EmailNotificationLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OFDEmailNotificationLog" EntityType="Self.OFDEmailNotificationLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SMSSentMessage" EntityType="Self.SMSSentMessage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmailNotificationPickup" EntityType="Self.EmailNotificationPickup" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [EmailNotificationPickup].[waybillno] AS [waybillno], 
@@ -107,6 +136,15 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationOFD' does not hav
     [ViwEmailNotificationOFD].[ShipperNameAR] AS [ShipperNameAR]
     FROM [dbo].[ViwEmailNotificationOFD] AS [ViwEmailNotificationOFD]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="ViwRateCheck" EntityType="Self.ViwRateCheck" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ViwRateCheck].[ID] AS [ID], 
+    [ViwRateCheck].[WayBillNo] AS [WayBillNo], 
+    [ViwRateCheck].[DeliveryID] AS [DeliveryID], 
+    [ViwRateCheck].[EmployID] AS [EmployID], 
+    [ViwRateCheck].[Balance] AS [Balance]
+    FROM [dbo].[ViwRateCheck] AS [ViwRateCheck]</DefiningQuery>
+          </EntitySet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -118,6 +156,8 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationOFD' does not hav
           <EntitySet Name="OFDEmailNotificationLogs" EntityType="ERPNaqelModel.OFDEmailNotificationLog" />
           <EntitySet Name="ViwEmailNotificationDelivereds" EntityType="ERPNaqelModel.ViwEmailNotificationDelivered" />
           <EntitySet Name="ViwEmailNotificationOFDs" EntityType="ERPNaqelModel.ViwEmailNotificationOFD" />
+          <EntitySet Name="SMSSentMessages" EntityType="ERPNaqelModel.SMSSentMessage" />
+          <EntitySet Name="ViwRateChecks" EntityType="ERPNaqelModel.ViwRateCheck" />
         </EntityContainer>
         <EntityType Name="EmailNotificationLog">
           <Key>
@@ -175,6 +215,41 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationOFD' does not hav
           <Property Name="CneeName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="ShipperNameEN" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="ShipperNameAR" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="SMSSentMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RefNo" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="MobileNo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="EmployID" Type="Int32" Nullable="false" />
+          <Property Name="SMSSendingStatusID" Type="Int32" Nullable="false" />
+          <Property Name="PurposeID" Type="Int32" Nullable="false" />
+          <Property Name="StatusID" Type="Int32" Nullable="false" />
+          <Property Name="MessageID" Type="Int32" />
+          <Property Name="Balance" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsWhatsApp" Type="Boolean" />
+          <Property Name="DivisionID" Type="Int32" />
+          <Property Name="IsCNEEConfirmed" Type="Boolean" />
+          <Property Name="CoreText" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="IsSyncToMySQL" Type="Boolean" />
+          <Property Name="AccountNo" Type="Int32" />
+          <Property Name="UnitCount" Type="Int32" />
+          <Property Name="ResponseMessageID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ViwRateCheck">
+          <Key>
+            <PropertyRef Name="ID" />
+            <PropertyRef Name="WayBillNo" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="WayBillNo" Type="Int32" Nullable="false" />
+          <Property Name="DeliveryID" Type="Int32" />
+          <Property Name="EmployID" Type="Int32" />
+          <Property Name="Balance" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -241,6 +316,42 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationOFD' does not hav
                 <ScalarProperty Name="CneeName" ColumnName="CneeName" />
                 <ScalarProperty Name="CneeEmail" ColumnName="CneeEmail" />
                 <ScalarProperty Name="waybillno" ColumnName="waybillno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SMSSentMessages">
+            <EntityTypeMapping TypeName="ERPNaqelModel.SMSSentMessage">
+              <MappingFragment StoreEntitySet="SMSSentMessage">
+                <ScalarProperty Name="ResponseMessageID" ColumnName="ResponseMessageID" />
+                <ScalarProperty Name="UnitCount" ColumnName="UnitCount" />
+                <ScalarProperty Name="AccountNo" ColumnName="AccountNo" />
+                <ScalarProperty Name="IsSyncToMySQL" ColumnName="IsSyncToMySQL" />
+                <ScalarProperty Name="CoreText" ColumnName="CoreText" />
+                <ScalarProperty Name="IsCNEEConfirmed" ColumnName="IsCNEEConfirmed" />
+                <ScalarProperty Name="DivisionID" ColumnName="DivisionID" />
+                <ScalarProperty Name="IsWhatsApp" ColumnName="IsWhatsApp" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="PurposeID" ColumnName="PurposeID" />
+                <ScalarProperty Name="SMSSendingStatusID" ColumnName="SMSSendingStatusID" />
+                <ScalarProperty Name="EmployID" ColumnName="EmployID" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+                <ScalarProperty Name="RefNo" ColumnName="RefNo" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ViwRateChecks">
+            <EntityTypeMapping TypeName="ERPNaqelModel.ViwRateCheck">
+              <MappingFragment StoreEntitySet="ViwRateCheck">
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="EmployID" ColumnName="EmployID" />
+                <ScalarProperty Name="DeliveryID" ColumnName="DeliveryID" />
+                <ScalarProperty Name="WayBillNo" ColumnName="WayBillNo" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

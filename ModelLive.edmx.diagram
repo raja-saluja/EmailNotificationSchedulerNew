@@ -10,6 +10,8 @@
         <EntityTypeShape EntityType="ERPNaqelModel.OFDEmailNotificationLog" Width="1.5" PointX="3.75" PointY="3.75" />
         <EntityTypeShape EntityType="ERPNaqelModel.ViwEmailNotificationDelivered" Width="1.5" PointX="0.75" PointY="4.75" />
         <EntityTypeShape EntityType="ERPNaqelModel.ViwEmailNotificationOFD" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ERPNaqelModel.SMSSentMessage" Width="1.5" PointX="6.375" PointY="3.75" />
+        <EntityTypeShape EntityType="ERPNaqelModel.ViwRateCheck" Width="1.5" PointX="0.75" PointY="7.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

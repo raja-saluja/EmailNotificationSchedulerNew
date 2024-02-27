@@ -131,6 +131,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SMSSentMessage.cs">
+      <DependentUpon>ModelLive.tt</DependentUpon>
+    </Compile>
     <Compile Include="ViwEmailNotificationDelivered.cs">
       <DependentUpon>ModelLive.tt</DependentUpon>
     </Compile>
@@ -138,6 +141,9 @@
       <DependentUpon>Model2.tt</DependentUpon>
     </Compile>
     <Compile Include="ViwEmailNotificationOFD.cs">
+      <DependentUpon>ModelLive.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ViwRateCheck.cs">
       <DependentUpon>ModelLive.tt</DependentUpon>
     </Compile>
   </ItemGroup>

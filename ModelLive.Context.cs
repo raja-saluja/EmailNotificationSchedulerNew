@@ -30,5 +30,7 @@ namespace EmailNotificationNew
         public virtual DbSet<OFDEmailNotificationLog> OFDEmailNotificationLogs { get; set; }
         public virtual DbSet<ViwEmailNotificationDelivered> ViwEmailNotificationDelivereds { get; set; }
         public virtual DbSet<ViwEmailNotificationOFD> ViwEmailNotificationOFDs { get; set; }
+        public virtual DbSet<SMSSentMessage> SMSSentMessages { get; set; }
+        public virtual DbSet<ViwRateCheck> ViwRateChecks { get; set; }
     }
 }

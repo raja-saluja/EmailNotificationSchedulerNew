@@ -24,13 +24,13 @@ namespace EmailNotificationNew
 
             try
             {
-                //SendEmailNotificationPickup();
+                SendEmailNotificationPickup();
 
-                //SendEmailNotificationDelivered();
+                SendEmailNotificationDelivered();
 
-                //SendEmailNotificationOFD();
+                SendEmailNotificationOFD();
 
-                //SendEmailNotificationExceptions();
+                SendEmailNotificationExceptions();
             }
             catch (Exception ex)
             {
@@ -45,12 +45,11 @@ namespace EmailNotificationNew
         {
             try
             {
+                Console.WriteLine(" pick up job start");
                 var EmailIsSent = false;
                 ERPNaqelEntities1 db = new ERPNaqelEntities1();
-                ERPNaqelEntitiesLive db1 = new ERPNaqelEntitiesLive();
-
-
-                //var SQLData = db1.Database.SqlQuery<EmailNotificationPickup>("select w.waybillno , c.Email As CneeEmail , c.Name As CneeName , cl.Name As ShipperNameEN ,cl.FName As ShipperNameAR  from waybill w WITH(NOLOCK)  left join pickup p WITH(NOLOCK) on p.WaybillNo = w.WayBillNo  left join Consignee c WITH(NOLOCK) on c.ID =  w.ConsigneeID  left join Client cl WITH(NOLOCK) on w.ClientID = cl.ID  left join EmailNotificationLog EN WITH(NOLOCK) on EN.WayBillNo = w.WayBillNo  where ltrim(rtrim(c.Email)) != ''  and c.Email != '0'  and c.Email LIKE '%[^0-9]%'  and c.Email  LIKE '%@%'  and w.LoadTypeID not in (66,136,204)  and w.IsCancelled = 0  and w.IsRTO = 0  and EN.IsPickup_EmailSent is Null  and  CAST(p.TimeIn as Date) = CAST(GETDATE()-1 AS DATE)  and w.WayBillNo = 271420433").ToList();
+                //ERPNaqelEntitiesLive db1 = new ERPNaqelEntitiesLive();
+                //var SQLData = db1.Database.SqlQuery<EmailNotificationPickup>("select w.waybillno , c.Email As CneeEmail , c.Name As CneeName , cl.Name As ShipperNameEN ,cl.FName As ShipperNameAR  from waybill w WITH(NOLOCK)  left join pickup p WITH(NOLOCK) on p.WaybillNo = w.WayBillNo  left join Consignee c WITH(NOLOCK) on c.ID =  w.ConsigneeID  left join Client cl WITH(NOLOCK) on w.ClientID = cl.ID  left join EmailNotificationLog EN WITH(NOLOCK) on EN.WayBillNo = w.WayBillNo  where ltrim(rtrim(c.Email)) != ''  and c.Email != '0'  and c.Email LIKE '%[^0-9]%'  and c.Email  LIKE '%@%'  and w.LoadTypeID not in (66,136,204)  and w.IsCancelled = 0  and w.IsRTO = 0  and EN.IsPickup_EmailSent is Null  and  CAST(p.TimeIn as Date) = CAST(GETDATE()-8 AS DATE)  and w.WayBillNo in(271420433, 271420476,271420475,271420474 ,271420555,271420558,271420556,271420557,271420587,271420588,271420594,271420595,271420596,271420597)").ToList();
 
                 List<EmailNotificationPickup> viwEmailNotificationPickups = new List<EmailNotificationPickup>();
 
@@ -65,6 +64,7 @@ namespace EmailNotificationNew
                    
                     foreach (var item in PickupEmailList)
                     {
+                        Console.WriteLine(item);
                         string EmailFormatLanguage = "";
                         if (item.CneeName != null)
                         {
@@ -136,14 +136,18 @@ namespace EmailNotificationNew
         {
             try
             {
+                Console.WriteLine("Delivered job start");
+
                 var EmailIsSent = false;
-                ERPNaqelEntities1 db = new ERPNaqelEntities1(); 
+                ERPNaqelEntities1 db = new ERPNaqelEntities1();
+                //ERPNaqelEntitiesLive db1 = new ERPNaqelEntitiesLive();
 
                 List<ViwEmailNotificationDelivered> viwEmailNotificationDelivered = new List<ViwEmailNotificationDelivered>();
 
                 viwEmailNotificationDelivered = db.ViwEmailNotificationDelivereds.ToList();
                 string htmlformat = "";
                 string To = ConfigurationManager.AppSettings["Myemail"];
+                //var SQLData = db1.Database.SqlQuery<ViwEmailNotificationDelivered>("select w.waybillno , c.Email As CneeEmail , c.Name As CneeName , cl.Name As ShipperNameEN ,cl.FName As ShipperNameAR  from waybill w WITH(NOLOCK)  left join delivery D WITH(NOLOCK) on D.WaybillID = w.id  left join Consignee c WITH(NOLOCK) on c.ID =  w.ConsigneeID  left join Client cl WITH(NOLOCK) on w.ClientID = cl.ID  left join EmailNotificationLog EN WITH(NOLOCK) on EN.WayBillNo = w.WayBillNo  where ltrim(rtrim(c.Email)) != ''  and c.Email != '0'  and c.Email LIKE '%[^0-9]%'  and c.Email  LIKE '%@%'  and w.LoadTypeID not in (66,136,204)  and D.DeliveryStatusID =   5 and D.StatusID = 1  and w.IsCancelled = 0  and EN.IsDelivered_EmailSent is Null  and  CAST(D.DeliveryDate as Date) = CAST(GETDATE() AS DATE)  and w.WayBillNo in( 271420476,271420475,271420474,271420555,271420558,271420556,271420557,271420587,271420588,,271420594,271420595,271420596,271420597)").ToList();
 
 
                 List<ViwEmailNotificationDelivered> DeliveredEmailList = viwEmailNotificationDelivered;
@@ -168,22 +172,25 @@ namespace EmailNotificationNew
                             }
 
                         }
-                        var Msg = db.Database.SqlQuery<string>("select CoreText from smssentmessage where StatusID = 1 and PurposeID = 8 and RefNo='" + item.waybillno + "' order by date desc").FirstOrDefault();
-                        // Size the control to fill the form with a margin
-                        MatchCollection ms = Regex.Matches(Msg, @"\b(?:https?://|www\.)\S+\b");
-                        string URLLink = ms[0].Value.ToString();
+                        string URLLink = getRatingURL(Convert.ToInt32(item.waybillno));
+
+
+                        //var Msg = db1.Database.SqlQuery<string>("select CoreText from smssentmessage where StatusID = 1 and PurposeID = 8 and RefNo='" + item.waybillno + "' order by date desc").FirstOrDefault();
+                        //// Size the control to fill the form with a margin
+                        //MatchCollection ms = Regex.Matches(Msg, @"\b(?:https?://|www\.)\S+\b");
+                        //string URLLink = ms[0].Value.ToString();
 
                         if (EmailFormatLanguage == "EN")
                         {
                             htmlformat = DeliveredFormatBodyEN(item, URLLink);
 
-                            EmailIsSent =  EmailBody(htmlformat, To, item.waybillno.ToString()); // replace email with user email 
+                            EmailIsSent =  EmailBody(htmlformat, item.CneeEmail, item.waybillno.ToString()); // replace email with user email 
                         }
                         else
                         {
                             htmlformat = DeliveredFormatEmailBodyAR(item, URLLink);
 
-                            EmailIsSent =  EmailBody(htmlformat, To, item.waybillno.ToString()); // replace email with user email 
+                            EmailIsSent =  EmailBody(htmlformat, item.CneeEmail, item.waybillno.ToString()); // replace email with user email 
                         }
 
                         if (EmailIsSent)
@@ -233,13 +240,18 @@ namespace EmailNotificationNew
         {
             try
             {
+                Console.WriteLine("OFD job start");
+
                 var EmailIsSent = false;
                 ERPNaqelEntities1 db = new ERPNaqelEntities1();
+                //ERPNaqelEntitiesLive db1 = new ERPNaqelEntitiesLive();
+
                 List<ViwEmailNotificationOFD> viwEmailNotificationOFD = new List<ViwEmailNotificationOFD>();
 
                 viwEmailNotificationOFD = db.ViwEmailNotificationOFDs.ToList();
                 string htmlformat = "";
                 string To = ConfigurationManager.AppSettings["Myemail"];
+                //var SQLData = db1.Database.SqlQuery<ViwEmailNotificationOFD>("select w.waybillno , c.Email As CneeEmail , c.Name As CneeName , cl.Name As ShipperNameEN ,cl.FName As ShipperNameAR  from waybill w WITH(NOLOCK)  left join Tracking T WITH(NOLOCK) on T.WaybillNo = w.WayBillNo  left join Consignee c WITH(NOLOCK) on c.ID =  w.ConsigneeID  left join Client cl WITH(NOLOCK) on w.ClientID = cl.ID   where ltrim(rtrim(c.Email)) != ''  and c.Email != '0'  and c.Email LIKE '%[^0-9]%'  and c.Email  LIKE '%@%'  and w.LoadTypeID not in (66,136,204)  and T.TrackingTypeID =  5  and T.StatusID = 1  and w.IsDelivered = 0  and w.IsRTO = 0  and  CAST(T.Date as Date) = CAST(GETDATE() AS DATE)  and w.WayBillNo in( 271420476,271420475,271420474,271420555,271420558,271420556,271420557,271420587,271420588,271420594,271420595,271420596,271420597,271420784)").ToList();
 
 
                 List<ViwEmailNotificationOFD> OFDEmailList = viwEmailNotificationOFD;
@@ -276,7 +288,6 @@ namespace EmailNotificationNew
                             string URLLink = ms[0].Value.ToString();
 
                             OFDEmailNotificationLog CheckEmailNotificationIsSent = db.OFDEmailNotificationLogs.Where(y => y.WaybillNo == item.waybillno).FirstOrDefault();
-
                             if (EmailFormatLanguage == "EN")
                             {
 
@@ -292,7 +303,7 @@ namespace EmailNotificationNew
                                     htmlformat = newstring;
 
 
-                                    EmailIsSent = EmailBody(htmlformat, To, item.waybillno.ToString()); // replace email with user email 
+                                    EmailIsSent = EmailBody(htmlformat, item.CneeEmail, item.waybillno.ToString()); // replace email with user email 
                                 }
 
                             }
@@ -310,7 +321,7 @@ namespace EmailNotificationNew
                                     htmlformat = newstring;
 
 
-                                    EmailIsSent = EmailBody(htmlformat, To, item.waybillno.ToString()); // replace email with user email 
+                                    EmailIsSent = EmailBody(htmlformat, item.CneeEmail, item.waybillno.ToString()); // replace email with user email 
                                 }
 
                             }
@@ -377,13 +388,18 @@ namespace EmailNotificationNew
         {
             try
             {
+                Console.WriteLine(" Exceptions job start");
+
                 var EmailIsSent = false;
                 ERPNaqelEntities1 db = new ERPNaqelEntities1();
+                //ERPNaqelEntitiesLive db1 = new ERPNaqelEntitiesLive();
+
                 List<ViwEmailNotificationException> viwEmailNotificationExceptions = new List<ViwEmailNotificationException>();
 
                 viwEmailNotificationExceptions = db.ViwEmailNotificationExceptions.ToList();
                 string htmlformat = "";
                 string To = ConfigurationManager.AppSettings["Myemail"];
+                //var SQLData = db1.Database.SqlQuery<ViwEmailNotificationException>("  select w.waybillno , c.Email As CneeEmail , c.Name As CneeName , cl.Name As ShipperNameEN ,cl.FName As ShipperNameAR  from delivery D WITH(NOLOCK)  inner join DeliveryStatus DS WITH(NOLOCK) on D.DeliveryStatusID =DS.id  left join Waybill W WITH(NOLOCK) on D.WaybillID = W.ID  left join Consignee c WITH(NOLOCK) on c.ID =  w.ConsigneeID  left join Client cl WITH(NOLOCK) on w.ClientID = cl.ID  where  DS.id in (8 ,17 , 27, 35 , 36 , 37 , 133,176 ,174 )  and w.LoadTypeID not in (66,136,204)  and w.IsRTO = 0  and ltrim(rtrim(c.Email)) != ''  and c.Email != '0'  and c.Email LIKE '%[^0-9]%'  and c.Email  LIKE '%@%'  and w.IsCancelled = 0  and w.IsDelivered = 0  and  CAST(D.InTime as Date) = CAST(GETDATE() AS DATE)  and w.WayBillNo in( 271420476,271420475,271420474,271420555,271420558,271420556,271420557,271420587,271420588,271420594,271420595,271420596,271420597)").ToList();
 
 
                 List<ViwEmailNotificationException> ExceptionsEmailList = viwEmailNotificationExceptions;
@@ -405,81 +421,95 @@ namespace EmailNotificationNew
                                 EmailFormatLanguage = "AR";
                             }
 
-                        }
-                        OFDEmailNotificationLog CheckEmailNotificationIsSent = db.OFDEmailNotificationLogs.Where(y => y.WaybillNo == item.waybillno).FirstOrDefault();
 
-
-                        if (EmailFormatLanguage == "EN")
-                        {
-
-                            if (CheckEmailNotificationIsSent != null && CheckEmailNotificationIsSent.CreatedDate.Value.Date == DateTime.Now.Date)
-                            {
-                                continue;
-
-                            }
-                            else
-                            {
-                                htmlformat = ExceptionsFormatBodyEN(item);
-                                EmailIsSent = EmailBody(htmlformat, To, item.waybillno.ToString()); // replace email with user email 
-                            }
 
                         }
+                        var Msg = db.Database.SqlQuery<string>("select CoreText from smssentmessage where StatusID = 1 and PurposeID in (29 ,31) and RefNo ='" + item.waybillno + "' order by date desc").FirstOrDefault();
+
+                        if (Msg == null)
+                            continue;
                         else
                         {
-                            if (CheckEmailNotificationIsSent != null && CheckEmailNotificationIsSent.CreatedDate.Value.Date == DateTime.Now.Date)
+
+
+                            // Size the control to fill the form with a margin
+                            MatchCollection ms = Regex.Matches(Msg, @"\b(?:https?://|www\.)\S+\b");
+                            string URLLink = ms[0].Value.ToString();
+
+                            OFDEmailNotificationLog CheckEmailNotificationIsSent = db.OFDEmailNotificationLogs.Where(y => y.WaybillNo == item.waybillno && y.IsExceptions_EmailSent == true).OrderBy(x => x.CreatedDate).FirstOrDefault();
+
+
+                            if (EmailFormatLanguage == "EN")
                             {
-                                continue;
+
+                                if (CheckEmailNotificationIsSent != null && CheckEmailNotificationIsSent.CreatedDate.Value.Date == DateTime.Now.Date)
+                                {
+                                    continue;
+
+                                }
+                                else
+                                {
+                                    htmlformat = ExceptionsFormatBodyEN(item, URLLink);
+                                    EmailIsSent = EmailBody(htmlformat, item.CneeEmail, item.waybillno.ToString()); // replace email with user email 
+                                }
 
                             }
                             else
                             {
-                                htmlformat = ExceptionsFormatEmailBodyAR(item);
-                                EmailIsSent = EmailBody(htmlformat, To, item.waybillno.ToString()); // replace email with user email 
+                                if (CheckEmailNotificationIsSent != null && CheckEmailNotificationIsSent.CreatedDate.Value.Date == DateTime.Now.Date)
+                                {
+                                    continue;
+
+                                }
+                                else
+                                {
+                                    htmlformat = ExceptionsFormatEmailBodyAR(item, URLLink);
+                                    EmailIsSent = EmailBody(htmlformat, item.CneeEmail, item.waybillno.ToString()); // replace email with user email 
+                                }
+
                             }
 
-                        }
-                       
 
-                        if (EmailIsSent)
-                        {
-                            //insert log row for this waybill
-                            EmailNotificationLog EmailNotification = db.EmailNotificationLogs.Where(y => y.WaybillNo == item.waybillno).FirstOrDefault();
-                            if (EmailNotification == null)
+                            if (EmailIsSent)
                             {
-                                EmailNotificationLog Obj = new EmailNotificationLog();
-                                Obj.IsExceptions_EmailSent = true;
-                                Obj.WaybillNo = item.waybillno;
-                                Obj.EmailAddress = item.CneeEmail;
-                                Obj.CreatedDate = DateTime.Now;
-                                Obj.LastUpdatedDate = DateTime.Now;
-                                Obj.StatusID = 1;
-                                db.EmailNotificationLogs.Add(Obj);
+                                //insert log row for this waybill
+                                EmailNotificationLog EmailNotification = db.EmailNotificationLogs.Where(y => y.WaybillNo == item.waybillno).FirstOrDefault();
+                                if (EmailNotification == null)
+                                {
+                                    EmailNotificationLog Obj = new EmailNotificationLog();
+                                    Obj.IsExceptions_EmailSent = true;
+                                    Obj.WaybillNo = item.waybillno;
+                                    Obj.EmailAddress = item.CneeEmail;
+                                    Obj.CreatedDate = DateTime.Now;
+                                    Obj.LastUpdatedDate = DateTime.Now;
+                                    Obj.StatusID = 1;
+                                    db.EmailNotificationLogs.Add(Obj);
+                                    db.SaveChanges();
+
+                                }
+                                else
+                                {
+                                    EmailNotification.IsExceptions_EmailSent = true;
+                                    EmailNotification.LastUpdatedDate = DateTime.Now;
+                                    db.SaveChanges();
+                                }
+                                // store OFD History for each waybill
+                                OFDEmailNotificationLog OFDHistory = new OFDEmailNotificationLog();
+
+                                OFDHistory.WaybillNo = item.waybillno; ;
+                                OFDHistory.IsExceptions_EmailSent = true;
+                                OFDHistory.EmailAddress = item.CneeEmail;
+                                OFDHistory.CreatedDate = DateTime.Now;
+                                OFDHistory.StatusID = 1;
+
+
+                                db.OFDEmailNotificationLogs.Add(OFDHistory);
                                 db.SaveChanges();
 
                             }
-                            else
-                            {
-                                EmailNotification.IsExceptions_EmailSent = true;
-                                EmailNotification.LastUpdatedDate = DateTime.Now;
-                                db.SaveChanges();
-                            }
-                            // store OFD History for each waybill
-                            OFDEmailNotificationLog OFDHistory = new OFDEmailNotificationLog();
 
-                            OFDHistory.WaybillNo = item.waybillno; ;
-                            OFDHistory.IsExceptions_EmailSent = true;
-                            OFDHistory.EmailAddress = item.CneeEmail;
-                            OFDHistory.CreatedDate = DateTime.Now;
-                            OFDHistory.StatusID = 1;
-
-
-                            db.OFDEmailNotificationLogs.Add(OFDHistory);
-                            db.SaveChanges();
 
                         }
-
-
-
                     }
 
                 }
@@ -491,7 +521,6 @@ namespace EmailNotificationNew
                 log.Error("Error Message: " + ex.InnerException);
             }
         }
-
         public static bool EmailBody(string s, string Email, string Subject)
         {
             var Email_IsSent = true;
@@ -565,7 +594,7 @@ namespace EmailNotificationNew
             try
             {
                 string HTMLPATH = ConfigurationManager.AppSettings["DLHTML"];
-                string body = "HTML\\EmailFormat.html"; // for local 
+                string body = "HTML\\EmailFormat.html";  
                 //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
                 //string body = string.Empty;
                 using (StreamReader reader = new StreamReader(body))
@@ -600,7 +629,7 @@ namespace EmailNotificationNew
             {
                 string HTMLNATH = ConfigurationManager.AppSettings["DLHTML"];
                
-                string body = "HTML\\EmailFormatA.html"; // for local 
+                string body = "HTML\\EmailFormatA.html";
                 //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
                 using (StreamReader reader = new StreamReader(body))
 
@@ -632,7 +661,7 @@ namespace EmailNotificationNew
             try
             {
                 string HTMLPATH = ConfigurationManager.AppSettings["DLHTML"];
-                string body = "HTML\\EmailFormatOFDE.html"; // for local 
+                string body = "HTML\\EmailFormatOFDE.html"; 
                 //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
                 //string body = string.Empty;
                 using (StreamReader reader = new StreamReader(body))
@@ -666,7 +695,7 @@ namespace EmailNotificationNew
             try
             {
                 string HTMLNATH = ConfigurationManager.AppSettings["DLHTML"];
-                string body = "HTML\\EmailFormatOFDAR.html"; // for local 
+                string body = "HTML\\EmailFormatOFDAR.html";
                 //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
                 using (StreamReader reader = new StreamReader(body))
 
@@ -692,13 +721,13 @@ namespace EmailNotificationNew
 
 
         }
-        public static string ExceptionsFormatBodyEN(ViwEmailNotificationException x)
+        public static string ExceptionsFormatBodyEN(ViwEmailNotificationException x, string URLLink)
         {
 
             try
             {
                 string HTMLPATH = ConfigurationManager.AppSettings["DLHTML"];
-                string body = "HTML\\EmailFormatExceptionsEN.html"; // for local 
+                string body = "HTML\\EmailFormatExceptionsEN.html";
                 //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
                 //string body = string.Empty;
                 using (StreamReader reader = new StreamReader(body))
@@ -711,7 +740,7 @@ namespace EmailNotificationNew
                 body = body.Replace("{CustomerName}", x.CneeName);
                 body = body.Replace("{waybillno}", x.waybillno.ToString());
                 body = body.Replace("{shipperName}", x.ShipperNameEN);
-                body = body.Replace("{URLLink}", "test");
+                body = body.Replace("{URLLink}", URLLink);
 
                 return body;
             }
@@ -726,13 +755,13 @@ namespace EmailNotificationNew
 
 
         }
-        public static string ExceptionsFormatEmailBodyAR(ViwEmailNotificationException x)
+        public static string ExceptionsFormatEmailBodyAR(ViwEmailNotificationException x, string URLLink)
         {
 
             try
             {
                 string HTMLNATH = ConfigurationManager.AppSettings["DLHTML"];
-                string body = "HTML\\EmailFormatExceptionsAR.html"; // for local 
+                string body = "HTML\\EmailFormatExceptionsAR.html"; 
                 //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
                 using (StreamReader reader = new StreamReader(body))
 
@@ -743,7 +772,7 @@ namespace EmailNotificationNew
                 body = body.Replace("{CustomerName}", x.CneeName);
                 body = body.Replace("{waybillno}", x.waybillno.ToString());
                 body = body.Replace("{shipperName}", x.ShipperNameAR);
-                body = body.Replace("{URLLink}", "test");
+                body = body.Replace("{URLLink}", URLLink);
 
                 return body;
             }
@@ -764,7 +793,7 @@ namespace EmailNotificationNew
             try
             {
                 string HTMLPATH = ConfigurationManager.AppSettings["DLHTML"];
-                string body = "HTML\\DeliveredEmailFormatE.html"; // for local 
+                string body = "HTML\\DeliveredEmailFormatE.html"; 
                 //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
                 using (StreamReader reader = new StreamReader(body))
 
@@ -796,7 +825,7 @@ namespace EmailNotificationNew
             try
             {
                 string HTMLNATH = ConfigurationManager.AppSettings["DLHTML"];
-                string body = "HTML\\EmailFormatDeliveredAR.html"; // for local 
+                string body = "HTML\\EmailFormatDeliveredAR.html";
                 //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
                 using (StreamReader reader = new StreamReader(body))
 
@@ -822,6 +851,87 @@ namespace EmailNotificationNew
 
 
         }
+        public static string getRatingURL(int WaybillNo)
+        {
+            string SMSURL = "";
+            ERPNaqelEntitiesLive db = new ERPNaqelEntitiesLive();
+
+
+            try
+            {
+                var data = db.Database.SqlQuery<ViwRateCheck>("select ID,WaybillNo,DeliveryID,EmployID,Balance from ViwRateCheck where Waybillno=" + WaybillNo).ToList();
+                if (data.Count > 0)
+                {
+                    if (data.FirstOrDefault().EmployID == 0)
+                    {
+                        string Balance = Get8Digits();
+                        SMSSentMessage sMSSentMessage = new SMSSentMessage();
+                        sMSSentMessage.Balance = "1";
+                        sMSSentMessage.RefNo = Convert.ToString(WaybillNo);
+                        sMSSentMessage.StatusID = 3;
+                        sMSSentMessage.Date = DateTime.Now;
+                        sMSSentMessage.MobileNo = "";
+                        sMSSentMessage.Message = "hi";
+                        sMSSentMessage.EmployID = (int)data.FirstOrDefault().DeliveryID;
+                        sMSSentMessage.SMSSendingStatusID = 101;
+                        sMSSentMessage.PurposeID = 8;
+                        db.SMSSentMessages.Add(sMSSentMessage);
+                        db.SaveChanges();
+                        //SMSURL = "https://infotrack.naqelexpress.com/GPS/CBU/Home/SMS/" + data.FirstOrDefault().DeliveryID + "|" + Convert.ToInt32(8) + "|" + "1";
+                        SMSURL = "https://infotrackmain.naqelksa.com/SMS/Home/RatingNew/" + data.FirstOrDefault().DeliveryID + "|" + Convert.ToInt32(8) + "|" + "1";
+                    }
+                    else
+                    {
+                        //SMSURL = "https://infotrack.naqelexpress.com/GPS/CBU/Home/SMS/" + data.FirstOrDefault().EmployID + "|" + Convert.ToInt32(8) + "|" + data.FirstOrDefault().Balance;
+                        SMSURL = "https://infotrackmain.naqelksa.com/SMS/Home/RatingNew/" + data.FirstOrDefault().EmployID + "|" + Convert.ToInt32(8) + "|" + data.FirstOrDefault().Balance;
+                    }
+                    SMSURL = MakeTinyUrl(SMSURL);
+                }
+
+                
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return SMSURL;
+        }
+        public static string Get8Digits()
+        {
+            var bytes = new byte[4];
+            var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(bytes);
+            uint random = BitConverter.ToUInt32(bytes, 0) % 100000000;
+            return String.Format("{0:D8}", random);
+        }
+        public static string MakeTinyUrl(string Url)
+        {
+            try
+            {
+                if (Url.Length <= 12)
+                {
+                    return Url;
+                }
+                if (!Url.ToLower().StartsWith("http") && !Url.ToLower().StartsWith("ftp"))
+                {
+                    Url = "https://" + Url;
+                }
+                var request = WebRequest.Create("http://tinyurl.com/api-create.php?url=" + Url);
+                var res = request.GetResponse();
+                string text;
+                using (var reader = new StreamReader(res.GetResponseStream()))
+                {
+                    text = reader.ReadToEnd();
+                }
+                return text;
+            }
+            catch (Exception)
+            {
+                return Url;
+            }
+        }
+
 
 
     }
