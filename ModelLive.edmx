@@ -5,6 +5,18 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="ERPNaqelModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ComplaintNotifications">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ComplaintID" Type="int" />
+          <Property Name="EmailID" Type="nvarchar" MaxLength="100" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="IsOpenEmailSent" Type="bit" />
+          <Property Name="IsClosedEmailSent" Type="bit" />
+          <Property Name="StatusID" Type="int" />
+        </EntityType>
         <EntityType Name="EmailNotificationLog">
           <Key>
             <PropertyRef Name="ID" />
@@ -55,6 +67,7 @@
           <Property Name="AccountNo" Type="int" />
           <Property Name="UnitCount" Type="int" />
           <Property Name="ResponseMessageID" Type="nvarchar" MaxLength="200" />
+          <Property Name="IsNotificationPushed" Type="bit" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'ERPNaqel.dbo.EmailNotificationPickup' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -67,6 +80,22 @@ warning 6002: The table/view 'ERPNaqel.dbo.EmailNotificationPickup' does not hav
           <Property Name="CneeName" Type="nvarchar" MaxLength="255" />
           <Property Name="ShipperNameEN" Type="nvarchar" MaxLength="255" />
           <Property Name="ShipperNameAR" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ERPNaqel.dbo.ViwComplaintNotifications' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ViwComplaintNotifications">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="ComplaintID" Type="int" />
+          <Property Name="EmailID" Type="nvarchar" MaxLength="100" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="IsOpenEmailSent" Type="bit" />
+          <Property Name="IsClosedEmailSent" Type="bit" />
+          <Property Name="StatusID" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="250" />
+          <Property Name="ClosedDescription" Type="nvarchar" MaxLength="500" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'ERPNaqel.dbo.ViwEmailNotificationDelivered' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -106,6 +135,7 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwRateCheck' does not have a primary
           <Property Name="Balance" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityContainer Name="ERPNaqelModelStoreContainer">
+          <EntitySet Name="ComplaintNotifications" EntityType="Self.ComplaintNotifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmailNotificationLog" EntityType="Self.EmailNotificationLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="OFDEmailNotificationLog" EntityType="Self.OFDEmailNotificationLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SMSSentMessage" EntityType="Self.SMSSentMessage" Schema="dbo" store:Type="Tables" />
@@ -117,6 +147,19 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwRateCheck' does not have a primary
     [EmailNotificationPickup].[ShipperNameEN] AS [ShipperNameEN], 
     [EmailNotificationPickup].[ShipperNameAR] AS [ShipperNameAR]
     FROM [dbo].[EmailNotificationPickup] AS [EmailNotificationPickup]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ViwComplaintNotifications" EntityType="Self.ViwComplaintNotifications" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ViwComplaintNotifications].[Id] AS [Id], 
+    [ViwComplaintNotifications].[ComplaintID] AS [ComplaintID], 
+    [ViwComplaintNotifications].[EmailID] AS [EmailID], 
+    [ViwComplaintNotifications].[CreatedDate] AS [CreatedDate], 
+    [ViwComplaintNotifications].[IsOpenEmailSent] AS [IsOpenEmailSent], 
+    [ViwComplaintNotifications].[IsClosedEmailSent] AS [IsClosedEmailSent], 
+    [ViwComplaintNotifications].[StatusID] AS [StatusID], 
+    [ViwComplaintNotifications].[Name] AS [Name], 
+    [ViwComplaintNotifications].[ClosedDescription] AS [ClosedDescription]
+    FROM [dbo].[ViwComplaintNotifications] AS [ViwComplaintNotifications]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="ViwEmailNotificationDelivered" EntityType="Self.ViwEmailNotificationDelivered" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -158,6 +201,8 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwRateCheck' does not have a primary
           <EntitySet Name="ViwEmailNotificationOFDs" EntityType="ERPNaqelModel.ViwEmailNotificationOFD" />
           <EntitySet Name="SMSSentMessages" EntityType="ERPNaqelModel.SMSSentMessage" />
           <EntitySet Name="ViwRateChecks" EntityType="ERPNaqelModel.ViwRateCheck" />
+          <EntitySet Name="ComplaintNotifications" EntityType="ERPNaqelModel.ComplaintNotification" />
+          <EntitySet Name="ViwComplaintNotifications" EntityType="ERPNaqelModel.ViwComplaintNotification" />
         </EntityContainer>
         <EntityType Name="EmailNotificationLog">
           <Key>
@@ -239,6 +284,7 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwRateCheck' does not have a primary
           <Property Name="AccountNo" Type="Int32" />
           <Property Name="UnitCount" Type="Int32" />
           <Property Name="ResponseMessageID" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="IsNotificationPushed" Type="Boolean" />
         </EntityType>
         <EntityType Name="ViwRateCheck">
           <Key>
@@ -250,6 +296,32 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwRateCheck' does not have a primary
           <Property Name="DeliveryID" Type="Int32" />
           <Property Name="EmployID" Type="Int32" />
           <Property Name="Balance" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="ComplaintNotification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ComplaintID" Type="Int32" />
+          <Property Name="EmailID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsOpenEmailSent" Type="Boolean" />
+          <Property Name="IsClosedEmailSent" Type="Boolean" />
+          <Property Name="StatusID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="ViwComplaintNotification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="ComplaintID" Type="Int32" />
+          <Property Name="EmailID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="IsOpenEmailSent" Type="Boolean" />
+          <Property Name="IsClosedEmailSent" Type="Boolean" />
+          <Property Name="StatusID" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="ClosedDescription" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -322,6 +394,7 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwRateCheck' does not have a primary
           <EntitySetMapping Name="SMSSentMessages">
             <EntityTypeMapping TypeName="ERPNaqelModel.SMSSentMessage">
               <MappingFragment StoreEntitySet="SMSSentMessage">
+                <ScalarProperty Name="IsNotificationPushed" ColumnName="IsNotificationPushed" />
                 <ScalarProperty Name="ResponseMessageID" ColumnName="ResponseMessageID" />
                 <ScalarProperty Name="UnitCount" ColumnName="UnitCount" />
                 <ScalarProperty Name="AccountNo" ColumnName="AccountNo" />
@@ -352,6 +425,34 @@ warning 6002: The table/view 'ERPNaqel.dbo.ViwRateCheck' does not have a primary
                 <ScalarProperty Name="DeliveryID" ColumnName="DeliveryID" />
                 <ScalarProperty Name="WayBillNo" ColumnName="WayBillNo" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ComplaintNotifications">
+            <EntityTypeMapping TypeName="ERPNaqelModel.ComplaintNotification">
+              <MappingFragment StoreEntitySet="ComplaintNotifications">
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="IsClosedEmailSent" ColumnName="IsClosedEmailSent" />
+                <ScalarProperty Name="IsOpenEmailSent" ColumnName="IsOpenEmailSent" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+                <ScalarProperty Name="ComplaintID" ColumnName="ComplaintID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ViwComplaintNotifications">
+            <EntityTypeMapping TypeName="ERPNaqelModel.ViwComplaintNotification">
+              <MappingFragment StoreEntitySet="ViwComplaintNotifications">
+                <ScalarProperty Name="ClosedDescription" ColumnName="ClosedDescription" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="StatusID" ColumnName="StatusID" />
+                <ScalarProperty Name="IsClosedEmailSent" ColumnName="IsClosedEmailSent" />
+                <ScalarProperty Name="IsOpenEmailSent" ColumnName="IsOpenEmailSent" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+                <ScalarProperty Name="ComplaintID" ColumnName="ComplaintID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

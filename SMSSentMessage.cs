@@ -33,5 +33,6 @@ namespace EmailNotificationNew
         public Nullable<int> AccountNo { get; set; }
         public Nullable<int> UnitCount { get; set; }
         public string ResponseMessageID { get; set; }
+        public Nullable<bool> IsNotificationPushed { get; set; }
     }
 }

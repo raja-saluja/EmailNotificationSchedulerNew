@@ -24,13 +24,15 @@ namespace EmailNotificationNew
 
             try
             {
-                SendEmailNotificationPickup();
+                //SendEmailNotificationPickup();
 
-                SendEmailNotificationDelivered();
+                //SendEmailNotificationDelivered();
 
-                SendEmailNotificationOFD();
+                //SendEmailNotificationOFD();
 
-                SendEmailNotificationExceptions();
+                //SendEmailNotificationExceptions();
+
+                ComplaintClose.sendComplaintCloseNotifications();
             }
             catch (Exception ex)
             {

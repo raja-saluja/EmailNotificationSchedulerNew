@@ -61,7 +61,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -89,6 +89,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComplaintClose.cs" />
+    <Compile Include="ComplaintNotification.cs">
+      <DependentUpon>ModelLive.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\CneeDetails.cs" />
     <Compile Include="EmailNotificationLog.cs">
       <DependentUpon>ModelLive.tt</DependentUpon>
@@ -134,6 +138,9 @@
     <Compile Include="SMSSentMessage.cs">
       <DependentUpon>ModelLive.tt</DependentUpon>
     </Compile>
+    <Compile Include="ViwComplaintNotification.cs">
+      <DependentUpon>ModelLive.tt</DependentUpon>
+    </Compile>
     <Compile Include="ViwEmailNotificationDelivered.cs">
       <DependentUpon>ModelLive.tt</DependentUpon>
     </Compile>
@@ -167,14 +174,36 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="HTML\DeliveredEmailFormatE.html" />
-    <Content Include="HTML\EmailFormatExceptionsEN.html" />
-    <Content Include="HTML\EmailFormat.html" />
-    <Content Include="HTML\EmailFormatExceptionsAR.html" />
-    <Content Include="HTML\EmailFormatA.html" />
-    <Content Include="HTML\EmailFormatDeliveredAR.html" />
-    <Content Include="HTML\EmailFormatOFDAR.html" />
-    <Content Include="HTML\EmailFormatOFDE.html" />
+    <Content Include="HTML\DeliveredEmailFormatE.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormatExceptionsEN.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormat.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormatExceptionsAR.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormatA.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormatDeliveredAR.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormatComplaintAR.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormatOFDAR.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormatComplaintE.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\EmailFormatOFDE.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Model2.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model2.edmx</DependentUpon>
