@@ -57,7 +57,7 @@ namespace EmailNotificationNew
 
                 //var VIWEmailCommunicationData = db.Database.SqlQuery<VIWEmailCommunication>("SELECT WayBillNo, ConsigneeEmail, CneeName, PickUpDate, EmployID, PurposeID, Balance,ClientID,CompanyName FROM VIWEmailCommunicationYUNEXPRESS
                 //WHERE WayBillNo = 395005710 or WayBillNo = 395213270 or  WayBillNo = 404054051").ToList(); // this is for testing
-                var VIWEmailCommunicationData = db.Database.SqlQuery<VIWEmailCommunication>("SELECT WayBillNo, ConsigneeEmail, CneeName, PickUpDate, EmployID, PurposeID, Balance,ClientID,CompanyName FROM VIWEmailCommunicationYUNEXPRESS").ToList();
+                var VIWEmailCommunicationData = db.Database.SqlQuery<VIWEmailCommunication>("SELECT WayBillNo, ConsigneeEmail, CneeName, PickUpDate, EmployID, PurposeID, Balance,ClientID,CompanyName FROM VIWEmailCommunicationYUNEXPRESS ORDER BY PurposeID").ToList();
 
 
                 if (VIWEmailCommunicationData.Count != 0)
