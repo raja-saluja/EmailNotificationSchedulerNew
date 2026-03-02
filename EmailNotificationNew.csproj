@@ -141,6 +141,7 @@
     <Compile Include="ViwComplaintNotification.cs">
       <DependentUpon>ModelLive.tt</DependentUpon>
     </Compile>
+    <Compile Include="VIWEmailCommunication.cs" />
     <Compile Include="ViwEmailNotificationDelivered.cs">
       <DependentUpon>ModelLive.tt</DependentUpon>
     </Compile>
@@ -175,6 +176,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HTML\DeliveredEmailFormatE.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\Delivery_Confirm.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HTML\Delivery_Confirm_ar.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="HTML\EmailFormatExceptionsEN.html">

@@ -33,6 +33,7 @@ namespace EmailNotificationNew
                 //SendEmailNotificationExceptions();
 
                 ComplaintClose.sendComplaintCloseNotifications();
+                SendEmailWhenPhoneIsEmpty();
             }
             catch (Exception ex)
             {
@@ -41,6 +42,132 @@ namespace EmailNotificationNew
                 log.Error("Error Message: " + ex.InnerException);
             }
 
+        }
+
+        public static void SendEmailWhenPhoneIsEmpty()
+        {
+            try
+            {
+                Console.WriteLine("Send Email When Phone Is Empty job start");
+                var EmailIsSent = false;
+                ERPNaqelEntitiesLive db = new ERPNaqelEntitiesLive(); // live server
+
+                string htmlformat = "";
+                //string To = ""; // test email
+
+                //var VIWEmailCommunicationData = db.Database.SqlQuery<VIWEmailCommunication>("SELECT WayBillNo, ConsigneeEmail, CneeName, PickUpDate, EmployID, PurposeID, Balance,ClientID,CompanyName FROM VIWEmailCommunicationYUNEXPRESS
+                //WHERE WayBillNo = 395005710 or WayBillNo = 395213270 or  WayBillNo = 404054051").ToList(); // this is for testing
+                var VIWEmailCommunicationData = db.Database.SqlQuery<VIWEmailCommunication>("SELECT WayBillNo, ConsigneeEmail, CneeName, PickUpDate, EmployID, PurposeID, Balance,ClientID,CompanyName FROM VIWEmailCommunicationYUNEXPRESS").ToList();
+
+
+                if (VIWEmailCommunicationData.Count != 0)
+                {
+                    Console.WriteLine("Data Exists");
+
+                    foreach (var item in VIWEmailCommunicationData)
+                    {
+                        Console.WriteLine("entered loop");
+
+                        var alreadySent = db.Database.SqlQuery<int>(
+                        @"SELECT COUNT(1) 
+                        FROM CustomerEmailCommunicationLog
+                        WHERE WayBillNo = @p0",
+                        item.WayBillNo
+                        ).FirstOrDefault();
+
+                        if (alreadySent > 0)
+                        {
+                            Console.WriteLine($"Email already sent for WayBillNo {item.WayBillNo}, skipping.");
+                            continue;
+                        }
+
+                        Console.WriteLine(item);
+                        string EmailFormatLanguage = "";
+                        if (item.CneeName != null)
+                        {
+
+                            if (Regex.IsMatch(item.CneeName, "^[a-zA-Z0-9_ ]"))
+                            {
+                                EmailFormatLanguage = "EN";
+                            }
+                            else
+                            {
+                                EmailFormatLanguage = "AR";
+                            }
+
+                        }
+                        //var Msg24 = db.Database.SqlQuery<string>("select CoreText from smssentmessage where StatusID = 1 and PurposeID = 24 and RefNo='" + item.WayBillNo + "' order by date desc").FirstOrDefault();
+                        //var Msg26 = db.Database.SqlQuery<string>("select CoreText from smssentmessage where StatusID = 1 and PurposeID = 26 and RefNo='" + item.WayBillNo + "' order by date desc").FirstOrDefault();
+                        string URLLink;
+                        if (item.PurposeID == 24)
+                        {
+                            URLLink = "https://infotrackmain.naqelksa.com/SMS/Pickup/Pickupsms/" +
+                                item.EmployID + "|" +
+                                item.PurposeID + "|" +
+                                item.Balance;
+                        }
+                        else
+                        {
+                            URLLink = "https://infotrackmain.naqelksa.com/PLSMS/DropOff/GeneralPickup/" +
+                                item.EmployID + "|" +
+                                item.PurposeID + "|" +
+                                item.Balance +
+                                "/CollectFrom/1";
+                        }
+
+                        if (EmailFormatLanguage == "EN")
+                        {
+                            htmlformat = EmailWhenPhoneIsEmptyFormatBodyEN(item ,URLLink);
+                            //EmailIsSent = EmailBody(htmlformat, To, "Update Address"); // testing
+                            EmailIsSent = EmailBody(htmlformat, item.ConsigneeEmail, "Update Address");
+                        }
+                        else
+                        {
+                            htmlformat = EmailWhenPhoneIsEmptyFormatBodyAR(item, URLLink);
+                            //EmailIsSent = EmailBody(htmlformat, To, "تحديث العنوان"); // testing
+                            EmailIsSent = EmailBody(htmlformat, item.ConsigneeEmail, "تحديث العنوان");
+                        }
+
+                        if (EmailIsSent)
+                        {
+                            Console.WriteLine("Sent");
+                            db.Database.ExecuteSqlCommand(
+                            @"INSERT INTO CustomerEmailCommunicationLog 
+                            (WayBillNo, ClientID, ClientName, ToEmail, SentTime)
+                            VALUES (@p0, @p1, @p2, @p3, @p4)",
+                            item.WayBillNo,
+                            item.ClientID,                 
+                            item.CompanyName,                 
+                            item.ConsigneeEmail,
+                            DateTime.Now
+                            );
+                        }
+                        else
+                        {
+                            Console.WriteLine("Not Sent");
+
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("No Data Exists");
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error Message: " + ex.Message.ToString(), ex);
+                log.Error("Error Message: " + ex.StackTrace);
+                log.Error("Error Message: " + ex.InnerException);
+                Console.WriteLine("Error Message: " + ex.Message.ToString(), ex);
+                Console.WriteLine("Error Message: " + ex.StackTrace);
+                Console.WriteLine("Error Message: " + ex.InnerException);
+
+            }
         }
 
         public static void SendEmailNotificationPickup()
@@ -589,6 +716,73 @@ namespace EmailNotificationNew
             }
 
             return Email_IsSent;
+        }
+        public static string EmailWhenPhoneIsEmptyFormatBodyEN(VIWEmailCommunication x, string URLLink)//EmailNotificationPickup x, string URLLink)
+        {
+
+            try
+            {
+                string HTMLPATH = ConfigurationManager.AppSettings["DLHTML"];
+                string body = "HTML\\Delivery_Confirm.html";
+                //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
+                //string body = string.Empty;
+
+                using (StreamReader reader = new StreamReader(body))
+                //using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/HTML/EmailFormat.html")))
+
+                {
+                    body = reader.ReadToEnd();
+                }
+
+                body = body.Replace("{CustomerName}", x.CneeName);
+                body = body.Replace("{Company}", x.CompanyName);
+                body = body.Replace("{DeliveryLink}", URLLink);
+
+                return body;
+            }
+
+            catch (Exception ex)
+            {
+                log.Error("Error Message: " + ex.Message.ToString(), ex);
+                log.Error("Error Message: " + ex.StackTrace);
+                log.Error("Error Message: " + ex.InnerException);
+                return ex.Message.ToString();
+            }
+
+
+        }
+        public static string EmailWhenPhoneIsEmptyFormatBodyAR(VIWEmailCommunication x, string URLLink)//EmailNotificationPickup x, string URLLink)
+        {
+
+            try
+            {
+                string HTMLPATH = ConfigurationManager.AppSettings["DLHTML"];
+                string body = "HTML\\Delivery_Confirm_ar.html";
+                //string body = HTMLPATH + "\\HTML\\EmailFormat.html"; // for server
+                //string body = string.Empty;
+                using (StreamReader reader = new StreamReader(body))
+                //using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/HTML/EmailFormat.html")))
+
+                {
+                    body = reader.ReadToEnd();
+                }
+
+                body = body.Replace("{CustomerName}", x.CneeName);
+                body = body.Replace("{Company}", x.CompanyName);
+                body = body.Replace("{DeliveryLink}", URLLink);
+
+                return body;
+            }
+
+            catch (Exception ex)
+            {
+                log.Error("Error Message: " + ex.Message.ToString(), ex);
+                log.Error("Error Message: " + ex.StackTrace);
+                log.Error("Error Message: " + ex.InnerException);
+                return ex.Message.ToString();
+            }
+
+
         }
         public static string pickedupFormatBodyEN(EmailNotificationPickup x ,string URLLink)
         {

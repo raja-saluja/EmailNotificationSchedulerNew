@@ -1,0 +1,287 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body, table, td, div, p {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-family: Helvetica, sans-serif;
+        }
+
+        .container {
+            width: 100% !important;
+            max-width: 600px;
+            margin: auto;
+            background: #F7F7F7;
+            border-radius: 25px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #06205C;
+            padding: 10px;
+            text-align: center;
+        }
+
+            .header img {
+                width: 40% !important;
+                max-width: 200px;
+                height: auto;
+                display: inline-block;
+            }
+
+                .header img:first-of-type {
+                    float: left;
+                }
+
+                .header img:last-of-type {
+                    float: right;
+                }
+
+        .content {
+            background: #fff;
+            padding: 25px;
+            text-align: left; /* Changed from center to left */
+            color: #06205C;
+            line-height: 1.5;
+        }
+
+        .footer {
+            background: #fff;
+            padding: 20px;
+            color: #06205C;
+            font-size: 12px;
+        }
+
+            .footer img {
+                width: 20px;
+                height: 20px;
+                margin: 2px 5px;
+                vertical-align: middle;
+            }
+
+            .footer a {
+                color: #06205C;
+                text-decoration: none;
+            }
+
+        .footer-images {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+            .footer-images img {
+                max-width: 120px;
+                margin: 0 10px;
+            }
+
+        .footer-links, .social-media {
+            padding-left: 0; /* Reset padding for left alignment */
+        }
+
+        .footer-end {
+            background: #06205C;
+            padding: 15px;
+        }
+
+        .status-container {
+            margin-bottom: 15px;
+        }
+
+        a.button-link {
+            background: #06205C;
+            color: #fff;
+            padding: 12px 26px;
+            border-radius: 26px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .stack-column {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .mobile-img {
+                width: 200px !important;
+                max-width: 200px !important;
+                margin: 0 auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body style="padding:20px;">
+    <table cellpadding="0" cellspacing="0" role="presentation" width="100%" align="center">
+
+        <tr>
+            <td style="background:#06205C; padding:10px;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td align="left">
+                            <img src="https://www.naqelexpress.com/static/images/logo-footer.png"
+                                 alt="Logo"
+                                 width="150"
+                                 style="display:block; max-width:150px; height:auto;">
+                        </td>
+                        <td align="right">
+                            <img src="https://www.naqelexpress.com/static/images/logoAR.png"
+                                 alt="Logo"
+                                 width="150"
+                                 style="display:block; max-width:150px; height:auto;">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td class="content">
+                <div class="status-container" style="text-align:center; margin-bottom:15px;">
+                    <img src="https://www.naqelexpress.com/static/images/Shipment-Status-03.png"
+                         alt="Delivery"
+                         width="150"
+                         style="display:inline-block;">
+                </div>
+
+                <p style="font-size:16px;margin:12px 0;">
+                    Dear <strong>{CustomerName}</strong>,
+                </p>
+
+                <p style="font-size:16px;margin:12px 0;">
+                    Your shipment from <strong>{Company}</strong> is now <strong>ready for delivery</strong> 🚚
+                </p>
+
+                <p style="font-size:15px;margin:12px 0;">
+                    Please verify your <strong>National Address</strong> and select your preferred delivery option to avoid delays.
+                </p>
+
+                <p style="margin:16px 0; text-align:left;">
+                    <a href="{DeliveryLink}" style="
+            display: inline-block;
+            background: #06205C;
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 14px 24px;
+            border-radius: 28px;
+            line-height: 1.2;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        " onmouseover="this.style.background='#02133A'; this.style.transform='scale(1.03)';"
+                       onmouseout="this.style.background='#06205C'; this.style.transform='scale(1)';">
+                        <span style="font-size:24px; vertical-align:middle; margin-right:6px;">👉</span>
+                        <span style="vertical-align:middle;">Update Address & Choose Delivery Option</span>
+                    </a>
+                </p>
+
+                <p style="font-size:14px;margin:8px 0;">
+                    💡 <strong>Tip:</strong> Parcel Locker Pickup is the fastest and most flexible option.
+                </p>
+
+                <p style="font-size:14px;margin:12px 0;">
+                    ⚠️ <strong>Important:</strong> No action may result in delivery delays.
+                </p>
+
+                <hr style="border:none;border-top:1px solid #e0e0e0;margin:16px 0;">
+
+                <p style="font-size:14px;margin:6px 0;">
+                    <strong>For assistance:</strong>
+                </p>
+
+                <p style="font-size:14px;line-height:1.4;">
+                    <strong>KSA:</strong> 8002464444 |
+                    <strong>Bahrain:</strong> 80028000 |
+                    <strong>Oman:</strong> 80064444<br>
+                    <strong>UAE:</strong> +971 43131800 |
+                    <strong>Other:</strong> +966 920020505
+                </p>
+
+                <p style="font-size:15px;margin-top:16px;">
+                    Best regards,<br><strong>NAQEL Express</strong>
+                </p>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td align="center" style="padding:20px 0;">
+
+                <!--[if mso]>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td align="center" style="padding:10px 0;">
+                        <img src="https://naqelexpress.com/static/images/logo%20with%20logistic%20ar.jpg"
+                             width="280"
+                             alt="Naqel Express"
+                             style="display:block;border:0;height:auto;">
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding:10px 0;">
+                        <img src="https://www.naqelexpress.com/static/icons/emailicons/19%2020(1)200new.png"
+                             width="280"
+                             alt="Contact Icons"
+                             style="display:block;border:0;height:auto;">
+                    </td>
+                </tr>
+            </table>
+            <![endif]-->
+                <!--[if !mso]><!-- -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" width="100%" style="max-width:600px;">
+                    <tr>
+                        <td align="center" valign="middle" style="padding:10px;">
+                            <img src="https://naqelexpress.com/static/images/logo%20with%20logistic%20ar.jpg"
+                                 width="280"
+                                 alt="Naqel Express"
+                                 style="display:block;border:0;width:100%;max-width:280px;height:auto;">
+                        </td>
+                        <td align="center" valign="middle" style="padding:10px;">
+                            <img src="https://www.naqelexpress.com/static/icons/emailicons/19%2020(1)200new.png"
+                                 width="280"
+                                 alt="Contact Icons"
+                                 style="display:block;border:0;width:100%;max-width:280px;height:auto;">
+                        </td>
+                    </tr>
+                </table>
+                <!--<![endif]-->
+
+            </td>
+
+        </tr>
+        <tr>
+            <p class="footer-links">
+                <a href="tel:920020505"><img src="https://www.naqelexpress.com/static/icons/emailicons/Phone-Icons.png" width="20">920020505 - 8002464444</a><br>
+                <a href="https://www.naqelexpress.com"><img src="https://www.naqelexpress.com/static/icons/emailicons/Web-Icon.png" width="20">www.naqelexpress.com</a><br>
+                <a href="mailto:care@naqel.com.sa"><img src="https://www.naqelexpress.com/static/icons/emailicons/Email-Icon.png" width="20">care@naqel.com.sa</a>
+            </p>
+
+            <p class="social-media">
+                <a href="https://www.linkedin.com/company/naqel"><img src="https://www.naqelexpress.com/static/icons/emailicons/Icons-Linkedin.png" width="20" margin-right: 10px></a>
+                <a href="https://twitter.com/naqelexpr"><img src="https://www.naqelexpress.com/static/icons/emailicons/Icons-twitter.png" width="20" margin-right: 10px></a>
+                <a href="https://www.instagram.com/naqelexpr/"><img src="https://www.naqelexpress.com/static/icons/emailicons/Icons-insta.png" width="20" margin-right: 10px></a>
+                <a href="https://www.facebook.com/NaqelExpr"><img src="https://www.naqelexpress.com/static/icons/emailicons/Icons-Facebook.png" width="20" margin-right: 10px></a>
+                <a href="https://www.naqelexpress.com/en/download_app/" target="_blank">
+                    Download Naqel App
+                    <img src="https://www.naqelexpress.com/static/images/QR_app.jpg" style="width: 70px; height: 50px; margin-left: 10px">
+                </a>
+            </p>
+        </tr>
+
+        <tr>
+            <td class="footer-end"></td>
+        </tr>
+
+    </table>
+</body>
+</html>
