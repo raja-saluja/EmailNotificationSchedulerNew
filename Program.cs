@@ -736,6 +736,7 @@ namespace EmailNotificationNew
 
                 body = body.Replace("{CustomerName}", x.CneeName);
                 body = body.Replace("{Company}", x.CompanyName);
+                body = body.Replace("{ShipmentNumber}", x.WayBillNo.ToString());
                 body = body.Replace("{DeliveryLink}", URLLink);
 
                 return body;
@@ -769,6 +770,7 @@ namespace EmailNotificationNew
 
                 body = body.Replace("{CustomerName}", x.CneeName);
                 body = body.Replace("{Company}", x.CompanyName);
+                body = body.Replace("{ShipmentNumber}", x.WayBillNo.ToString());
                 body = body.Replace("{DeliveryLink}", URLLink);
 
                 return body;
