@@ -115,6 +115,25 @@ namespace EmailNotificationNew
                                 "/CollectFrom/1";
                         }
 
+                        try
+                        {
+                            var ShortURLGenerator = new GenerateShortURL();
+                            string shortUrl = ShortURLGenerator.GetWaybillShortLink(item.WayBillNo, "pickup");
+                            if (string.IsNullOrEmpty(shortUrl))
+                            {
+                                Console.WriteLine("API failed or returned error, Full URL Was Sent");
+                            }
+                            else
+                            {
+                                URLLink = shortUrl;
+                            }
+                            Console.WriteLine("Final URL Sent: " + URLLink);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error, URL was not shortened" + ex.Message);
+                        }
+
                         if (EmailFormatLanguage == "EN")
                         {
                             htmlformat = EmailWhenPhoneIsEmptyFormatBodyEN(item ,URLLink);
