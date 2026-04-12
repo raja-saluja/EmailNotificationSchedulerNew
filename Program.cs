@@ -118,7 +118,7 @@ namespace EmailNotificationNew
                         try
                         {
                             var ShortURLGenerator = new GenerateShortURL();
-                            string shortUrl = ShortURLGenerator.GetWaybillShortLink(item.WayBillNo, "pickup");
+                            string shortUrl = ShortURLGenerator.GetWaybillShortLink(item.WayBillNo, "data_registered");
                             if (string.IsNullOrEmpty(shortUrl))
                             {
                                 Console.WriteLine("API failed or returned error, Full URL Was Sent");
