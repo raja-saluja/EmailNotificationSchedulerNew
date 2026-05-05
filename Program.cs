@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Net;
 using System.Data.SqlClient;
+using Serilog;
 
 namespace EmailNotificationNew
 {
@@ -32,7 +33,7 @@ namespace EmailNotificationNew
 
                 //SendEmailNotificationExceptions();
 
-                ComplaintClose.sendComplaintCloseNotifications();
+                //ComplaintClose.sendComplaintCloseNotifications();
                 SendEmailWhenPhoneIsEmpty();
             }
             catch (Exception ex)
@@ -48,147 +49,115 @@ namespace EmailNotificationNew
         {
             try
             {
-                Console.WriteLine("Send Email When Phone Is Empty job start");
-                var EmailIsSent = false;
-                ERPNaqelEntitiesLive db = new ERPNaqelEntitiesLive(); // live server
+                Log.Information("Send Email When Phone Is Empty job start");
 
-                string htmlformat = "";
-                //string To = ""; // test email
-
-                //var VIWEmailCommunicationData = db.Database.SqlQuery<VIWEmailCommunication>("SELECT WayBillNo, ConsigneeEmail, CneeName, PickUpDate, EmployID, PurposeID, Balance,ClientID,CompanyName FROM VIWEmailCommunicationYUNEXPRESS
-                //WHERE WayBillNo = 395005710 or WayBillNo = 395213270 or  WayBillNo = 404054051").ToList(); // this is for testing
-                var VIWEmailCommunicationData = db.Database.SqlQuery<VIWEmailCommunication>("SELECT WayBillNo, ConsigneeEmail, CneeName, PickUpDate, EmployID, PurposeID, Balance,ClientID,CompanyName FROM VIWEmailCommunicationYUNEXPRESS ORDER BY PurposeID").ToList();
-
-
-                if (VIWEmailCommunicationData.Count != 0)
+                using (var db = new ERPNaqelEntitiesLive())
                 {
-                    Console.WriteLine("Data Exists");
+                    var data = db.Database.SqlQuery<VIWEmailCommunication>(
+                        @"SELECT WayBillNo, ConsigneeEmail, CneeName, PickUpDate, EmployID, PurposeID, Balance,ClientID,CompanyName 
+                    FROM VIWEmailCommunicationYUNEXPRESS ORDER BY PurposeID").ToList();
 
-                    foreach (var item in VIWEmailCommunicationData)
+
+                    if (data.Count == 0)
                     {
-                        Console.WriteLine("entered loop");
+                        Log.Information("No Data Exists");
+                        return;
+                    }
+
+                    Log.Information("Data Exists. Count: {Count}", data.Count);
+
+                    foreach (var item in data)
+                    {
+                        Log.Information("Processing WayBillNo: {WayBillNo}", item.WayBillNo);
 
                         var alreadySent = db.Database.SqlQuery<int>(
-                        @"SELECT COUNT(1) 
-                        FROM CustomerEmailCommunicationLog
-                        WHERE WayBillNo = @p0",
-                        item.WayBillNo
-                        ).FirstOrDefault();
+                            @"SELECT COUNT(1) FROM CustomerEmailCommunicationLog WHERE WayBillNo = @p0",
+                            item.WayBillNo).FirstOrDefault();
 
                         if (alreadySent > 0)
                         {
-                            Console.WriteLine($"Email already sent for WayBillNo {item.WayBillNo}, skipping.");
+                            Log.Information("Email already sent for WayBillNo {WayBillNo}, skipping.", item.WayBillNo);
                             continue;
                         }
 
-                        Console.WriteLine(item);
-                        string EmailFormatLanguage = "";
-                        if (item.CneeName != null)
-                        {
-
-                            if (Regex.IsMatch(item.CneeName, "^[a-zA-Z0-9_ ]"))
-                            {
-                                EmailFormatLanguage = "EN";
-                            }
-                            else
-                            {
-                                EmailFormatLanguage = "AR";
-                            }
-
-                        }
-                        //var Msg24 = db.Database.SqlQuery<string>("select CoreText from smssentmessage where StatusID = 1 and PurposeID = 24 and RefNo='" + item.WayBillNo + "' order by date desc").FirstOrDefault();
-                        //var Msg26 = db.Database.SqlQuery<string>("select CoreText from smssentmessage where StatusID = 1 and PurposeID = 26 and RefNo='" + item.WayBillNo + "' order by date desc").FirstOrDefault();
                         string URLLink;
+
                         if (item.PurposeID == 24)
                         {
-                            URLLink = "https://infotrackmain.naqelksa.com/SMS/Pickup/Pickupsms/" +
-                                item.EmployID + "|" +
-                                item.PurposeID + "|" +
-                                item.Balance;
+                            URLLink = $"https://infotrackmain.naqelksa.com/SMS/Pickup/Pickupsms/{item.EmployID}|{item.PurposeID}|{item.Balance}";
                         }
                         else
                         {
-                            URLLink = "https://infotrackmain.naqelksa.com/PLSMS/DropOff/GeneralPickup/" +
-                                item.EmployID + "|" +
-                                item.PurposeID + "|" +
-                                item.Balance +
-                                "/CollectFrom/1";
+                            URLLink = $"https://infotrackmain.naqelksa.com/PLSMS/DropOff/GeneralPickup/{item.EmployID}|{item.PurposeID}|{item.Balance}/CollectFrom/1";
                         }
 
                         try
                         {
-                            var ShortURLGenerator = new GenerateShortURL();
-                            string shortUrl = ShortURLGenerator.GetWaybillShortLink(item.WayBillNo, "data_registered");
-                            if (string.IsNullOrEmpty(shortUrl))
-                            {
-                                Console.WriteLine("API failed or returned error, Full URL Was Sent");
-                            }
-                            else
+                            var shortUrl = new GenerateShortURL()
+                                .GetWaybillShortLink(item.WayBillNo, "data_registered");
+
+                            if (!string.IsNullOrEmpty(shortUrl))
                             {
                                 URLLink = shortUrl;
                             }
-                            Console.WriteLine("Final URL Sent: " + URLLink);
+
+                            Log.Information("Final URL for {WayBillNo}: {URL}", item.WayBillNo, URLLink);
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Error, URL was not shortened" + ex.Message);
+                            Log.Error(ex, "Error shortening URL for WayBillNo {WayBillNo}", item.WayBillNo);
                         }
 
-                        if (EmailFormatLanguage == "EN")
+                        string htmlformat;
+                        bool emailSent;
+
+                        var isEnglish = item.CneeName != null &&
+                                        System.Text.RegularExpressions.Regex.IsMatch(item.CneeName, "^[a-zA-Z0-9_ ]");
+
+                        if (isEnglish)
                         {
-                            htmlformat = EmailWhenPhoneIsEmptyFormatBodyEN(item ,URLLink);
-                            //EmailIsSent = EmailBody(htmlformat, To, "Update Address"); // testing
-                            EmailIsSent = EmailBody(htmlformat, item.ConsigneeEmail, "Update Address");
+                            htmlformat = EmailWhenPhoneIsEmptyFormatBodyEN(item, URLLink);
+                            emailSent = EmailBody(htmlformat, item.ConsigneeEmail, "Update Address");
                         }
                         else
                         {
                             htmlformat = EmailWhenPhoneIsEmptyFormatBodyAR(item, URLLink);
-                            //EmailIsSent = EmailBody(htmlformat, To, "تحديث العنوان"); // testing
-                            EmailIsSent = EmailBody(htmlformat, item.ConsigneeEmail, "تحديث العنوان");
+                            emailSent = EmailBody(htmlformat, item.ConsigneeEmail, "تحديث العنوان");
                         }
 
-                        if (EmailIsSent)
+                        if (emailSent)
                         {
-                            Console.WriteLine("Sent");
+                            Log.Information("Email sent to {Email} for WayBillNo {WayBillNo}",
+                                item.ConsigneeEmail, item.WayBillNo);
+
                             db.Database.ExecuteSqlCommand(
-                            @"INSERT INTO CustomerEmailCommunicationLog 
-                            (WayBillNo, ClientID, ClientName, ToEmail, SentTime)
-                            VALUES (@p0, @p1, @p2, @p3, @p4)",
-                            item.WayBillNo,
-                            item.ClientID,                 
-                            item.CompanyName,                 
-                            item.ConsigneeEmail,
-                            DateTime.Now
+                                @"INSERT INTO CustomerEmailCommunicationLog 
+                          (WayBillNo, ClientID, ClientName, ToEmail, SentTime)
+                          VALUES (@p0, @p1, @p2, @p3, @p4)",
+                                item.WayBillNo,
+                                item.ClientID,
+                                item.CompanyName,
+                                item.ConsigneeEmail,
+                                DateTime.Now
                             );
                         }
                         else
                         {
-                            Console.WriteLine("Not Sent");
-
+                            Log.Warning("Email NOT sent to {Email} for WayBillNo {WayBillNo}",
+                                item.ConsigneeEmail, item.WayBillNo);
                         }
-
                     }
-
                 }
-                else
-                {
-                    Console.WriteLine("No Data Exists");
-
-                }
-
             }
             catch (Exception ex)
             {
-                log.Error("Error Message: " + ex.Message.ToString(), ex);
-                log.Error("Error Message: " + ex.StackTrace);
-                log.Error("Error Message: " + ex.InnerException);
-                Console.WriteLine("Error Message: " + ex.Message.ToString(), ex);
-                Console.WriteLine("Error Message: " + ex.StackTrace);
-                Console.WriteLine("Error Message: " + ex.InnerException);
-
+                Log.Fatal(ex, "Fatal error in SendEmailWhenPhoneIsEmpty");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
             }
         }
-
         public static void SendEmailNotificationPickup()
         {
             try
