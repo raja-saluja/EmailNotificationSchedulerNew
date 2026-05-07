@@ -27,7 +27,7 @@ jobs:
         uses: NuGet/setup-nuget@v2
 
       - name: Restore NuGet Packages
-        run: nuget restore ${{ env.PROJECT_PATH }}
+        run: nuget restore ${{ env.SOLUTION_PATH }}
 
       - name: Build Project
         run: |
