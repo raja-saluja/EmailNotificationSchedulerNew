@@ -6,6 +6,7 @@ on:
       - main
 
 env:
+  SOLUTION_PATH: EmailNotificationNew.sln
   PROJECT_PATH: EmailNotificationNew.csproj
   DEPLOY_PATH: E:\Apps\Schedulers\EmailNotificationNew
   TASK_NAME: EmailNotificationScheduler
