@@ -209,6 +209,7 @@
       <DependentUpon>ModelLive.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
+    <None Include="run.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="HTML\DeliveredEmailFormatE.html">
