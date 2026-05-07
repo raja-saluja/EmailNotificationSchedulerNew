@@ -29,20 +29,23 @@ jobs:
       - name: Restore NuGet Packages
         run: nuget restore ${{ env.SOLUTION_PATH }}
 
-      - name: Build Project
+      - name: Build Solution
         run: |
-          msbuild ${{ env.PROJECT_PATH }} `
+          msbuild ${{ env.SOLUTION_PATH }} `
           /p:Configuration=Release
 
-      - name: Stop Scheduled Task
-        shell: powershell
-        run: |
-          Stop-ScheduledTask -TaskName "${{ env.TASK_NAME }}" -ErrorAction SilentlyContinue
-
-      - name: Kill Existing Process
+      - name: Stop Existing Process
         shell: powershell
         run: |
           Get-Process EmailNotificationNew -ErrorAction SilentlyContinue | Stop-Process -Force
+
+      - name: Create Deploy Directory
+        shell: powershell
+        run: |
+          New-Item `
+            -ItemType Directory `
+            -Force `
+            -Path "${{ env.DEPLOY_PATH }}"
 
       - name: Deploy Files
         shell: powershell
@@ -53,8 +56,9 @@ jobs:
           robocopy `
             $source `
             $target `
-            /MIR `
-            /XF appsettings.json
+            /E `
+            /IS `
+            /IT
 
           if ($LASTEXITCODE -le 3) {
             exit 0
@@ -62,7 +66,59 @@ jobs:
             exit $LASTEXITCODE
           }
 
+      - name: Create run.ps1
+        shell: powershell
+        run: |
+          @"
+          cd "${{ env.DEPLOY_PATH }}"
+          .\EmailNotificationNew.exe
+          "@ | Out-File `
+            "${{ env.DEPLOY_PATH }}\run.ps1" `
+            -Encoding utf8
+
+      - name: Create or Update Scheduled Task
+        shell: powershell
+        run: |
+
+          $taskName = "${{ env.TASK_NAME }}"
+
+          $action = New-ScheduledTaskAction `
+            -Execute "powershell.exe" `
+            -Argument "-ExecutionPolicy Bypass -File `"${{ env.DEPLOY_PATH }}\run.ps1`""
+
+          $trigger = New-ScheduledTaskTrigger `
+            -Once `
+            -At (Get-Date) `
+            -RepetitionInterval (New-TimeSpan -Hours 1)
+
+          $settings = New-ScheduledTaskSettingsSet `
+            -AllowStartIfOnBatteries `
+            -DontStopIfGoingOnBatteries `
+            -StartWhenAvailable
+
+          $existingTask = Get-ScheduledTask `
+            -TaskName $taskName `
+            -ErrorAction SilentlyContinue
+
+          if ($existingTask) {
+
+            Unregister-ScheduledTask `
+              -TaskName $taskName `
+              -Confirm:$false
+
+          }
+
+          Register-ScheduledTask `
+            -TaskName $taskName `
+            -Action $action `
+            -Trigger $trigger `
+            -Settings $settings `
+            -User "SYSTEM" `
+            -RunLevel Highest `
+            -Force
+
       - name: Start Scheduled Task
         shell: powershell
         run: |
-          Start-ScheduledTask -TaskName "${{ env.TASK_NAME }}"
+          Start-ScheduledTask `
+            -TaskName "${{ env.TASK_NAME }}"
