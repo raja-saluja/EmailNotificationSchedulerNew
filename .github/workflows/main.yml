@@ -1,0 +1,67 @@
+name: Deploy Scheduler
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_PATH: EmailNotificationNew.csproj
+  DEPLOY_PATH: E:\Apps\Schedulers\EmailNotificationNew
+  TASK_NAME: EmailNotificationScheduler
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet Packages
+        run: nuget restore ${{ env.PROJECT_PATH }}
+
+      - name: Build Project
+        run: |
+          msbuild ${{ env.PROJECT_PATH }} `
+          /p:Configuration=Release
+
+      - name: Stop Scheduled Task
+        shell: powershell
+        run: |
+          Stop-ScheduledTask -TaskName "${{ env.TASK_NAME }}" -ErrorAction SilentlyContinue
+
+      - name: Kill Existing Process
+        shell: powershell
+        run: |
+          Get-Process EmailNotificationNew -ErrorAction SilentlyContinue | Stop-Process -Force
+
+      - name: Deploy Files
+        shell: powershell
+        run: |
+          $source = ".\bin\Release"
+          $target = "${{ env.DEPLOY_PATH }}"
+
+          robocopy `
+            $source `
+            $target `
+            /MIR `
+            /XF appsettings.json
+
+          if ($LASTEXITCODE -le 3) {
+            exit 0
+          } else {
+            exit $LASTEXITCODE
+          }
+
+      - name: Start Scheduled Task
+        shell: powershell
+        run: |
+          Start-ScheduledTask -TaskName "${{ env.TASK_NAME }}"
